@@ -329,7 +329,7 @@
             android:layout_columnWeight="0.2"
             android:background="@color/colorPrimaryDark"
             android:fontFamily="monospace"
-            android:onClick="calculate"
+            android:onClick="equals"
             android:text="@string/equals"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
             android:textColor="@android:color/holo_blue_bright"

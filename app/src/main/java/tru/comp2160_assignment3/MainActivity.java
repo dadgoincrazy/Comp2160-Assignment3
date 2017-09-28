@@ -11,7 +11,7 @@ import android.content.Context;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected double previousInput;
+    protected Double previousInput;
     protected String operator;
     public TextView input_string;
 
@@ -23,15 +23,15 @@ public class MainActivity extends AppCompatActivity {
         input_string = (TextView) findViewById(R.id.input_string);
     }
 
-    public double getCurrentInput()
+    public Double getCurrentInput()
     {
         if(input_string.getText() != null) {
             return Double.parseDouble(input_string.getText().toString());
         }
-        return;
+        return Double.NaN;
     }
 
-    public double getPreviousInput()
+    public Double getPreviousInput()
     {
         return previousInput;
     }
@@ -89,13 +89,56 @@ public class MainActivity extends AppCompatActivity {
         input_string.setText(null);
     }
 
-    public void calculate(View v)
+    public void equals(View v)
     {
         Toast.makeText(getApplicationContext(), String.valueOf(getCurrentInput()), Toast.LENGTH_SHORT).show();
     }
 
+    public void calculate()
+    {
+        Double value1 = getPreviousInput();
+        Double value2 = getCurrentInput();
+        Double val;
+
+        switch(getOperator())
+        {
+            case "+":
+                val = value1 + value2;
+                break;
+            case "-":
+                val = value1 + value2;
+                break;
+            case "/":
+                val = value1 / value2;
+                break;
+            case "x":
+                val = value1*value2;
+                break;
+            default:
+                val = 0.00;
+                Toast.makeText(getApplicationContext(),"Unrecognized Operator", Toast.LENGTH_SHORT).show();
+        }
+
+        input_string.setText(String.valueOf(val));
+    }
+
     public void operatorInput(View v)
     {
-        if(getCurrentInput() == 0.00);
+        Button this_button = (Button) v;
+        String op = this_button.getText().toString();
+
+        if(getCurrentInput().isNaN())
+        {
+            setOperator(op);
+        } else {
+            if(!getPreviousInput().isNaN())
+            {
+                calculate();
+            }
+            
+            setPreviousInput(getCurrentInput());
+            input_string.setText("");
+            setOperator(op);
+        }
     }
 }
