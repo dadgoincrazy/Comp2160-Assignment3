@@ -11,13 +11,47 @@ import android.content.Context;
 
 public class MainActivity extends AppCompatActivity {
 
+    protected double previousInput;
+    protected String operator;
+    public TextView input_string;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        input_string = (TextView) findViewById(R.id.input_string);
     }
 
-    public void numeric_input(View v)
+    public double getCurrentInput()
+    {
+        if(input_string.getText() != null) {
+            return Double.parseDouble(input_string.getText().toString());
+        }
+        return;
+    }
+
+    public double getPreviousInput()
+    {
+        return previousInput;
+    }
+
+    public void setPreviousInput(double value)
+    {
+        previousInput = value;
+    }
+
+    public String getOperator()
+    {
+        return operator;
+    }
+
+    public void setOperator(String op)
+    {
+        operator = op;
+    }
+
+    public void numericInput(View v)
     {
         TextView input_string = (TextView) findViewById(R.id.input_string);
         Button this_button = (Button) v;
@@ -25,19 +59,11 @@ public class MainActivity extends AppCompatActivity {
         String input = (String) this_button.getText();
         String prev = (String) input_string.getText();
         String new_text = prev;
-        String char_list = "+x/";
-        char last_char = prev.charAt(prev.length() -1);
+//        String char_list = "+x/";
+//        char last_char = prev.charAt(prev.length() -1);
 
         if(prev.length() < 13)
         {
-            if(char_list.contains(String.valueOf(last_char)))
-            {
-                if(char_list.contains(input))
-                {
-                    
-                }
-            }
-
             new_text = prev + input;
         }
 
@@ -61,5 +87,15 @@ public class MainActivity extends AppCompatActivity {
     {
         TextView input_string = (TextView) findViewById(R.id.input_string);
         input_string.setText(null);
+    }
+
+    public void calculate(View v)
+    {
+        Toast.makeText(getApplicationContext(), String.valueOf(getCurrentInput()), Toast.LENGTH_SHORT).show();
+    }
+
+    public void operatorInput(View v)
+    {
+        if(getCurrentInput() == 0.00);
     }
 }
