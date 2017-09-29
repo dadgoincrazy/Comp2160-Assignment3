@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView input_string;
     public TextView input_prev;
     public Button minus;
+    public Button delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         input_string = (TextView) findViewById(R.id.input_string);
         input_prev = (TextView) findViewById(R.id.input_previous);
         minus = (Button) findViewById(R.id.input_minus);
+        delete = (Button) findViewById(R.id.input_delete);
 
         minus.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -35,12 +37,19 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        delete.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                delAll();
+                return true;
+            }
+        });
     }
 
     public void toggleMinus() {
         try
         {
-            Toast.makeText(getApplicationContext(),"toggleMinus", Toast.LENGTH_SHORT).show();
             if(input_string.getText().toString().contains("-"))
             {
                 input_string.setText(input_string.getText().toString().replace("-",""));
@@ -54,12 +63,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void delAll() {
+        try
+        {
+            input_string.setText("");
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public Double getCurrentInput()
     {
-        if(input_string.getText() != "") {
-            return Double.parseDouble(input_string.getText().toString());
+        try
+        {
+            if((input_string.getText() != "") && (input_string.getText() != "-")) {
+                return Double.parseDouble(input_string.getText().toString());
+            }
+            return Double.NaN;
+        } catch (Exception e) {
+            return Double.NaN;
         }
-        return Double.NaN;
     }
 
     public Double getPreviousInput()
