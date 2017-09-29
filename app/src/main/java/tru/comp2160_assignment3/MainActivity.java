@@ -11,9 +11,10 @@ import android.content.Context;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected Double previousInput;
-    protected String operator;
+    protected Double previousInput = Double.NaN;
+    protected String operator = "";
     public TextView input_string;
+    public TextView input_prev;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +22,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         input_string = (TextView) findViewById(R.id.input_string);
+        input_prev = (TextView) findViewById(R.id.input_previous);
     }
 
     public Double getCurrentInput()
     {
-        if(input_string.getText() != null) {
+        if(input_string.getText() != "") {
             return Double.parseDouble(input_string.getText().toString());
         }
         return Double.NaN;
@@ -36,9 +38,17 @@ public class MainActivity extends AppCompatActivity {
         return previousInput;
     }
 
-    public void setPreviousInput(double value)
+    public void setPreviousInput(Double value)
     {
-        previousInput = value;
+        if(value == null)
+        {
+            previousInput = Double.NaN;
+            input_prev.setText(null);
+        } else {
+            previousInput = value;
+            input_prev.setText(String.valueOf(value));
+        }
+
     }
 
     public String getOperator()
@@ -53,26 +63,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void numericInput(View v)
     {
-        TextView input_string = (TextView) findViewById(R.id.input_string);
-        Button this_button = (Button) v;
+        try {
+            Button this_button = (Button) v;
 
-        String input = (String) this_button.getText();
-        String prev = (String) input_string.getText();
-        String new_text = prev;
-//        String char_list = "+x/";
-//        char last_char = prev.charAt(prev.length() -1);
+            String input = this_button.getText().toString();
+            String prev = input_string.getText().toString();
+            String new_text = prev;
 
-        if(prev.length() < 13)
-        {
-            new_text = prev + input;
+            if (prev.length() < 13) {
+                if(input.equals("."))
+                {
+                    if(prev.length() == 0 || (prev.indexOf(".") > 0))
+                        new_text = prev;
+                    else
+                        new_text = prev + input;
+                } else {
+                    new_text = prev + input;
+                }
+            }
+
+            input_string.setText(new_text);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
-
-        input_string.setText(new_text);
     }
 
     public void del(View v)
     {
-        TextView input_string = (TextView) findViewById(R.id.input_string);
         String prev = (String) input_string.getText();
 
         if(prev != null && prev.length() > 0)
@@ -85,13 +102,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void clear(View v)
     {
-        TextView input_string = (TextView) findViewById(R.id.input_string);
         input_string.setText(null);
+        setPreviousInput(null);
+        setOperator(null);
     }
 
     public void equals(View v)
     {
-        Toast.makeText(getApplicationContext(), String.valueOf(getCurrentInput()), Toast.LENGTH_SHORT).show();
+        try {
+            if(!getPreviousInput().isNaN() && (getPreviousInput() != null) && !getCurrentInput().isNaN() && (getCurrentInput() != null))
+            {
+                calculate();
+            }
+
+            setPreviousInput(getCurrentInput());
+            input_string.setText(null);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void calculate()
@@ -106,39 +134,56 @@ public class MainActivity extends AppCompatActivity {
                 val = value1 + value2;
                 break;
             case "-":
-                val = value1 + value2;
+                val = value1 - value2;
                 break;
             case "/":
-                val = value1 / value2;
+                if(value1 == 0.0 || value2 == 0.0)
+                {
+                    val = 0.0;
+                } else {
+                    val = value1 / value2;
+                }
                 break;
             case "x":
-                val = value1*value2;
+                val = value1 * value2;
                 break;
             default:
-                val = 0.00;
-                Toast.makeText(getApplicationContext(),"Unrecognized Operator", Toast.LENGTH_SHORT).show();
+                val = value1 + value2;
         }
 
-        input_string.setText(String.valueOf(val));
+        input_string.setText(String.format("%.4f", val));
     }
 
     public void operatorInput(View v)
     {
-        Button this_button = (Button) v;
-        String op = this_button.getText().toString();
+        try {
+            Button this_button = (Button) v;
+            String op = this_button.getText().toString();
 
-        if(getCurrentInput().isNaN())
-        {
-            setOperator(op);
-        } else {
-            if(!getPreviousInput().isNaN())
+            if(getCurrentInput().isNaN() || (getCurrentInput() == null))
             {
-                calculate();
+                if(getPreviousInput().isNaN() || (getPreviousInput() == null))
+                {
+                    if(op.equals("-"))
+                    {
+                        numericInput(v);
+                    }
+                } else {
+                    setOperator(op);
+                }
+            } else {
+                if(!getPreviousInput().isNaN() && getPreviousInput() != null)
+                {
+                    calculate();
+                }
+
+                setPreviousInput(getCurrentInput());
+                input_string.setText(null);
+                setOperator(op);
             }
-            
-            setPreviousInput(getCurrentInput());
-            input_string.setText("");
-            setOperator(op);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
+
     }
 }
