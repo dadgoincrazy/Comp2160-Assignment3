@@ -9,12 +9,15 @@ import android.widget.Toast;
 import android.view.View;
 import android.content.Context;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     protected Double previousInput = Double.NaN;
     protected String operator = "";
     public TextView input_string;
     public TextView input_prev;
+    public Button minus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +26,32 @@ public class MainActivity extends AppCompatActivity {
 
         input_string = (TextView) findViewById(R.id.input_string);
         input_prev = (TextView) findViewById(R.id.input_previous);
+        minus = (Button) findViewById(R.id.input_minus);
+
+        minus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                toggleMinus();
+                return true;
+            }
+        });
+    }
+
+    public void toggleMinus() {
+        try
+        {
+            Toast.makeText(getApplicationContext(),"toggleMinus", Toast.LENGTH_SHORT).show();
+            if(input_string.getText().toString().contains("-"))
+            {
+                input_string.setText(input_string.getText().toString().replace("-",""));
+            } else {
+                String addMinus = "-" + input_string.getText().toString();
+                input_string.setText(addMinus);
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public Double getCurrentInput()
@@ -73,10 +102,14 @@ public class MainActivity extends AppCompatActivity {
             if (prev.length() < 13) {
                 if(input.equals("."))
                 {
-                    if(prev.length() == 0 || (prev.indexOf(".") > 0))
+                    if(prev.indexOf(".") > 0)
+                    {
                         new_text = prev;
-                    else
+                    } else if(prev.length() == 0) {
+                        new_text = "0.";
+                    } else {
                         new_text = prev + input;
+                    }
                 } else {
                     new_text = prev + input;
                 }
@@ -104,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     {
         input_string.setText(null);
         setPreviousInput(null);
-        setOperator(null);
+        setOperator("");
     }
 
     public void equals(View v)
@@ -114,8 +147,10 @@ public class MainActivity extends AppCompatActivity {
             {
                 calculate();
             }
-
-            setPreviousInput(getCurrentInput());
+            if(!getCurrentInput().isNaN() && (getCurrentInput() != null))
+            {
+                setPreviousInput(getCurrentInput());
+            }
             input_string.setText(null);
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -148,10 +183,10 @@ public class MainActivity extends AppCompatActivity {
                 val = value1 * value2;
                 break;
             default:
-                val = value1 + value2;
+                val = value2;
         }
 
-        input_string.setText(String.format("%.4f", val));
+        input_string.setText(String.format(Locale.CANADA, "%.4f", val));
     }
 
     public void operatorInput(View v)
@@ -162,15 +197,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(getCurrentInput().isNaN() || (getCurrentInput() == null))
             {
-                if(getPreviousInput().isNaN() || (getPreviousInput() == null))
-                {
-                    if(op.equals("-"))
-                    {
-                        numericInput(v);
-                    }
-                } else {
-                    setOperator(op);
-                }
+                setOperator(op);
             } else {
                 if(!getPreviousInput().isNaN() && getPreviousInput() != null)
                 {
