@@ -1,7 +1,9 @@
 package tru.comp2160_assignment3;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
@@ -31,8 +33,29 @@ public class MainActivity extends AppCompatActivity {
         input_string = (TextView) findViewById(R.id.input_string);
         input_prev = (TextView) findViewById(R.id.input_previous);
         minus = (Button) findViewById(R.id.input_minus);
+
         delete = (Button) findViewById(R.id.input_delete);
         input_operator = (TextView) findViewById(R.id.input_operator);
+
+        if(savedInstanceState != null)
+        {
+            try
+            {
+                setOperator(savedInstanceState.getString("operator"));
+                input_string.setText(savedInstanceState.getString("current"));
+                Double prev = Double.valueOf(savedInstanceState.getString("prev"));
+                if(prev.isNaN())
+                {
+                    previousInput = Double.NaN;
+                    input_prev.setText("");
+                } else {
+                    setPreviousInput(Double.valueOf(savedInstanceState.getString("prev")));
+                }
+            } catch(Exception e) {
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+            }
+
+        }
 
         minus.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -49,6 +72,19 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        try {
+            super.onSaveInstanceState(outState);
+
+            outState.putString("operator", operator);
+            outState.putString("current", input_string.getText().toString());
+            outState.putString("prev", String.valueOf(getPreviousInput()));
+        } catch(Exception e) {
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void toggleMinus() {
