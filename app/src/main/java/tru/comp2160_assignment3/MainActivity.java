@@ -9,6 +9,8 @@ import android.widget.Toast;
 import android.view.View;
 import android.content.Context;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView input_prev;
     public Button minus;
     public Button delete;
+    public TextView input_operator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         input_prev = (TextView) findViewById(R.id.input_previous);
         minus = (Button) findViewById(R.id.input_minus);
         delete = (Button) findViewById(R.id.input_delete);
+        input_operator = (TextView) findViewById(R.id.input_operator);
 
         minus.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -111,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     public void setOperator(String op)
     {
         operator = op;
+        input_operator.setText(op);
     }
 
     public void numericInput(View v)
